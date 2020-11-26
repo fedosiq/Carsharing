@@ -1,15 +1,17 @@
 package com.fedosique.carsharing.storage
 
+import java.util.UUID
+
 import com.fedosique.carsharing.Car
 
 
 trait CarStorage[F[_]] {
 
-  def put(id: Int, car: Car): F[Unit]
+  def put(id: UUID, car: Car): F[Unit]
 
-  def get(id: Int): F[Option[Car]]
+  def get(id: UUID): F[Option[Car]]
 
   def listAll(): F[Seq[Car]]
 
-  def contains(id: Int): F[Boolean]
+  def contains(id: UUID): F[Boolean]
 }

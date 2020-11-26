@@ -1,11 +1,14 @@
 package com.fedosique.carsharing
 
+import java.util.UUID
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import com.fedosique.carsharing.api.ClientServiceRoutes
 import com.fedosique.carsharing.logic.ClientServiceImpl
 import com.fedosique.carsharing.storage.InMemoryCarStorage
+
 
 object HttpApp extends App {
 
@@ -17,8 +20,8 @@ object HttpApp extends App {
   val bmw = Car("bmw 3", "black", "г651та78", 60.787842, 70.342421, 0.5, isOccupied = true)
 
   val initDB = for {
-    _ <- storage.put(1, kia)
-    _ <- storage.put(2, bmw)
+    _ <- storage.put(UUID.randomUUID(), kia)
+    _ <- storage.put(UUID.randomUUID(), bmw)
   } yield ()
   initDB.runToFuture(monix.execution.Scheduler.Implicits.global)
 
