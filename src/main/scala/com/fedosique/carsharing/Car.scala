@@ -5,16 +5,22 @@ import io.circe.generic.semiauto._
 
 
 final case class Car(
-                //                id: Int,
-                name: String,
-                color: String,
-                plateNumber: String,
-                lat: Double, // or BigDecimal
-                lon: Double,
-                fuel: Double,
-                isOccupied: Boolean)
+                      name: String,
+                      color: String,
+                      plateNumber: String,
+                      location: Location,
+                      status: Status,
+                      price: Double
+                    )
+
+final case class Status(fuel: Double, isOccupied: Boolean)
 
 object Car {
   implicit val jsonDecoder: Decoder[Car] = deriveDecoder
   implicit val jsonEncoder: Encoder[Car] = deriveEncoder
+}
+
+object Status {
+  implicit val jsonDecoder: Decoder[Status] = deriveDecoder
+  implicit val jsonEncoder: Encoder[Status] = deriveEncoder
 }

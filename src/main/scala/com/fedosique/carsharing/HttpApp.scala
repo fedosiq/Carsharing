@@ -16,8 +16,8 @@ object HttpApp extends App {
   implicit val ec = actorSystem.dispatcher
 
   val storage = new InMemoryCarStorage
-  val kia = Car("kia rio", "blue", "а117рп78", 60.787842, 55.848593, 1, isOccupied = false)
-  val bmw = Car("bmw 3", "black", "г651та78", 60.787842, 70.342421, 0.5, isOccupied = true)
+  val kia = Car("kia rio", "blue", "а117рп78", Location(59.914412476005396, 30.318188229277073), Status(1, isOccupied = false), 0)
+  val bmw = Car("bmw 3", "black", "г651та78", Location(59.91876362948221, 30.31814575195313), Status(0.5, isOccupied = true), 0)
 
   val initDB = for {
     _ <- storage.put(UUID.randomUUID(), kia)

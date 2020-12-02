@@ -16,10 +16,14 @@ Cервис, который запускается на каждом автом�
   "name": "kia rio",
   "color": "blue",
   "plateNumber": "в123ау78",
-  "lat": 60.78782,
-  "lon": 55.8493,
-  "fuel": 0.85,
-  "isOccupied": false,
+  "location": {
+    "lat": 60.78782,
+    "lon": 55.8493 
+  },
+  "status": {
+    "fuel": 0.85,
+    "isOccupied": false
+  },
   "price": 10.0
 }
 ```
