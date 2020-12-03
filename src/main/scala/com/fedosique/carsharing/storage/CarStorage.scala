@@ -1,8 +1,8 @@
 package com.fedosique.carsharing.storage
 
-import java.util.UUID
-
 import com.fedosique.carsharing.Car
+
+import java.util.UUID
 
 
 trait CarStorage[F[_]] {
