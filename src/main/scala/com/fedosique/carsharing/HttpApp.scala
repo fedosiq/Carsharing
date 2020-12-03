@@ -12,6 +12,7 @@ object HttpApp extends App {
   implicit val ec = actorSystem.dispatcher
 
   val storage = new InMemoryCarStorage
+  InMemoryCarStorage.init(storage)
   private val clientServiceModule = new ClientServiceModule(storage)
 
   Http()
