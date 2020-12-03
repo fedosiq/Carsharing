@@ -9,7 +9,7 @@ import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 
 
-class ClientServiceRoutes(service: ClientService[Task]) {
+class ClientApi(service: ClientService[Task]) {
 
   private val getCarById: Route = (get & path("cars" / JavaUUID)) { carId =>
     complete(service.getCar(carId).runToFuture)
