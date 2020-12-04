@@ -9,10 +9,7 @@ import java.util.UUID
 
 class ClientServiceImpl(storage: CarStorage[Task]) extends ClientService[Task] {
 
-  override def getCar(id: UUID): Task[Option[Car]] = storage.get(id).map {
-    case Some(car) if !car.status.isOccupied => Some(car)
-    case _ => None
-  }
+  override def getCar(id: UUID): Task[Option[Car]] = storage.get(id).map(_.filterNot(_.status.isOccupied))
 
   override def availableCars(loc: Location): Task[Seq[Car]] =
     storage.listAll()
