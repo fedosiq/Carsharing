@@ -1,17 +1,20 @@
 package com.fedosique.carsharing.logic
 
-import java.util.UUID
-
 import com.fedosique.carsharing.storage.CarStorage
 import com.fedosique.carsharing.{Car, DistanceCalculator, Location}
 import monix.eval.Task
 
+import java.util.UUID
+
 
 class ClientServiceImpl(storage: CarStorage[Task]) extends ClientService[Task] {
 
-  override def getCar(id: UUID): Task[Option[Car]] = storage.get(id)
+  override def getCar(id: UUID): Task[Option[Car]] = storage.get(id).map {
+    case Some(car) if !car.status.isOccupied => Some(car)
+    case _ => None
+  }
 
-  override def freeCars(loc: Location): Task[Seq[Car]] =
+  override def availableCars(loc: Location): Task[Seq[Car]] =
     storage.listAll()
       .map(cars =>
         cars.filterNot(_.status.isOccupied)

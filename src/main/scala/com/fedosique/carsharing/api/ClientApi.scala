@@ -14,11 +14,11 @@ class ClientApi(service: ClientService[Task]) {
   private val getCarById: Route = (get & path("cars" / JavaUUID)) { carId =>
     complete(service.getCar(carId).runToFuture)
   }
-  private val freeCars: Route = (get & path("cars")) {
+  private val availableCars: Route = (get & path("cars")) {
     parameters("lat".as[Double], "lon".as[Double]) { (lat, lon) =>
-      complete(service.freeCars(Location(lat, lon)).runToFuture)
+      complete(service.availableCars(Location(lat, lon)).runToFuture)
     }
   }
 
-  val routes: Route = getCarById ~ freeCars
+  val routes: Route = getCarById ~ availableCars
 }
