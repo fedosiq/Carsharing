@@ -1,6 +1,6 @@
 package com.fedosique.carsharing.logic
 
-import com.fedosique.carsharing.{Car, Location}
+import com.fedosique.carsharing.{Car, CarAlreadyOccupiedException, CarNotFoundException, Location, UserAlreadyRentingException, UserNotFoundException}
 
 import java.util.UUID
 
@@ -23,5 +23,27 @@ trait ClientService[F[_]] {
    * */
   def availableCars(loc: Location): F[Seq[Car]]
 
+  /**
+   * Occupies car with given user
+   *
+   * @param carId  id of a car to be occupied
+   * @param userId occupier id
+   * @return occupied car info
+   * @throws CarNotFoundException        if carId is not in db
+   * @throws UserNotFoundException       if userId is not in db
+   * @throws UserAlreadyRentingException if user tries to rent more than one car
+   * @throws CarAlreadyOccupiedException if user tries to rent already occupied car
+   * */
   def occupyCar(carId: UUID, userId: UUID): F[Car]
+
+  /**
+   * Makes car available if it's occupied by given user
+   *
+   * @param carId  id of a car to be left
+   * @param userId occupier id
+   * @return left car info
+   * @throws CarNotFoundException  if carId is not in db
+   * @throws UserNotFoundException if userId is not in db
+   * */
+  def leaveCar(carId: UUID, userId: UUID): F[Car]
 }

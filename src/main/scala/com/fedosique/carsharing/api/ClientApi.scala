@@ -26,5 +26,11 @@ class ClientApi(service: ClientService[Task]) {
       complete(service.occupyCar(carId, userId).runToFuture)
     }
   }
-  val routes: Route = getCarById ~ availableCars ~ occupyCar
+  private val leaveCar: Route = (post & path("cars" / JavaUUID / "leave" )) { carId =>
+    parameter("userId".as[UUID]) { userId =>
+      complete(service.leaveCar(carId, userId).runToFuture)
+    }
+  }
+
+  val routes: Route = getCarById ~ availableCars ~ occupyCar ~ leaveCar
 }

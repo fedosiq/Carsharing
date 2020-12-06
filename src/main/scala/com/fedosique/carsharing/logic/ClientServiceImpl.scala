@@ -19,12 +19,25 @@ class ClientServiceImpl(carStorage: CarStorage[Task], userStorage: UserStorage[T
       )
 
   override def occupyCar(carId: UUID, userId: UUID): Task[Car] = getCar(carId).flatMap {
-    case Some(car) if !car.status.isOccupied => userStorage.get(userId).flatMap {
+    case Some(car) => userStorage.get(userId).flatMap {
       case Some(user) if !user.isRenting => userStorage.update(userId, user.copy(isRenting = true)).flatMap(_ =>
         carStorage.update(carId, car.copy(status = car.status.copy(isOccupied = true, occupiedBy = Some(user.copy(isRenting = true))))))
       case Some(_) => throw UserAlreadyRentingException(userId)
       case _ => throw UserNotFoundException(userId)
     }
-    case _ => throw CarAlreadyOccupiedException(carId)
+    case Some(_) => throw CarAlreadyOccupiedException(carId) // никогда не выкинется, т.к. getCar(carId) отфильтрует все занятые машины, но с другой стороны так более явно
+    case _ => throw CarNotFoundException(carId)
+  }
+
+  override def leaveCar(carId: UUID, userId: UUID): Task[Car] = carStorage.get(carId).flatMap {
+    case Some(car) if car.status.isOccupied => userStorage.get(userId).flatMap {
+      case Some(user) if car.status.occupiedBy.contains(user) =>
+        userStorage.update(userId, user.copy(isRenting = false)).flatMap(_ =>
+          carStorage.update(carId, car.copy(status = car.status.copy(isOccupied = false, occupiedBy = None))))
+//    case Some(_) => throw CarIsRentedByOtherUser(carId) // возможно избыточно
+      case _ => throw UserNotFoundException(userId)
+    }
+//  case Some(_) => throw CarNotOccupiedException(carId)
+    case _ => throw CarNotFoundException(carId)
   }
 }
