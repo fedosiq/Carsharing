@@ -22,6 +22,14 @@ class AdminApi(service: AdminService[Task]) {
   private val allCars: Route = (get & path("cars")) {
     complete(service.cars.runToFuture)
   }
+  private val addUser: Route = (post & path("users" / "add")) {
+    parameters("name".as[String], "email".as[String]) { (name, email) =>
+      complete(service.addUser(name, email).runToFuture)
+    }
+  }
+  private val getUserById: Route = (get & path("users" / JavaUUID)) { userID =>
+    complete(service.getUser(userID).runToFuture)
+  }
 
-  val routes: Route = getCarById ~ addCar ~ allCars
+  val routes: Route = getCarById ~ addCar ~ allCars ~ addUser ~ getUserById
 }

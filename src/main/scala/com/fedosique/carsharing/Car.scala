@@ -13,7 +13,7 @@ final case class Car(
                       price: Double
                     )
 
-final case class Status(fuel: Double, isOccupied: Boolean)
+final case class Status(fuel: Double, isOccupied: Boolean, occupiedBy: Option[User]) //or Option[UUID]
 
 object Car {
   implicit val jsonDecoder: Decoder[Car] = deriveDecoder

@@ -1,8 +1,8 @@
 package com.fedosique.carsharing.logic
 
-import java.util.UUID
-
 import com.fedosique.carsharing.{Car, Location}
+
+import java.util.UUID
 
 
 trait ClientService[F[_]] {
@@ -22,4 +22,6 @@ trait ClientService[F[_]] {
    * @return available cars sorted by distance from user's location
    * */
   def availableCars(loc: Location): F[Seq[Car]]
+
+  def occupyCar(carId: UUID, userId: UUID): F[Car]
 }

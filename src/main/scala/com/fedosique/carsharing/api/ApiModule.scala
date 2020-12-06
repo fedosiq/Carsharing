@@ -9,5 +9,5 @@ class ApiModule(clientServiceModule: ClientServiceModule, adminServiceModule: Ad
       clientServiceModule.routes,
       adminServiceModule.routes
     )
-  )
+  )(exceptionHandler = CarsharingExceptionHandler.exceptionHandler)
 }

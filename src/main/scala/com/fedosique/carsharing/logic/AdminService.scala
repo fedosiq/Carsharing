@@ -1,8 +1,7 @@
 package com.fedosique.carsharing.logic
 
 import java.util.UUID
-
-import com.fedosique.carsharing.Car
+import com.fedosique.carsharing.{Car, User}
 
 trait AdminService[F[_]] {
 
@@ -11,4 +10,8 @@ trait AdminService[F[_]] {
   def addCar(car: Car): F[UUID]
 
   def cars: F[Seq[Car]]
+
+  def addUser(name: String, email: String): F[User]
+
+  def getUser(id: UUID): F[Option[User]]
 }

@@ -8,6 +8,8 @@ import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 
+import java.util.UUID
+
 
 class ClientApi(service: ClientService[Task]) {
 
@@ -19,6 +21,10 @@ class ClientApi(service: ClientService[Task]) {
       complete(service.availableCars(Location(lat, lon)).runToFuture)
     }
   }
-
-  val routes: Route = getCarById ~ availableCars
+  private val occupyCar: Route = (post & path("cars" / JavaUUID / "occupy" )) { carId =>
+    parameter("userId".as[UUID]) { userId =>
+      complete(service.occupyCar(carId, userId).runToFuture)
+    }
+  }
+  val routes: Route = getCarById ~ availableCars ~ occupyCar
 }

@@ -35,7 +35,7 @@ class InMemoryCarStorageTest extends InMemoryCarStorageSuite with Matchers {
 
   it should "add order to the storage" in {
     val id = UUID.randomUUID()
-    val newCar = Car("kia rio", "blue", "а117рп78", Location(60.787842, 55.848593), Status(1, isOccupied = false), 0)
+    val newCar = Car("kia rio", "blue", "а117рп78", Location(60.787842, 55.848593), Status(1, isOccupied = false, None), 0)
     val test = for {
       _ <- storage.put(id, newCar)
       res <- storage.get(id)
