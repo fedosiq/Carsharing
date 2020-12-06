@@ -18,10 +18,11 @@ class ClientServiceImpl(carStorage: CarStorage[Task], userStorage: UserStorage[T
           .sortBy(car => DistanceCalculator.calculateDistanceInKM(loc, car.location))
       )
 
-  //TODO: запретить занимать машину, если юзер уже занял какую-нибудь машину
   override def occupyCar(carId: UUID, userId: UUID): Task[Car] = getCar(carId).flatMap {
     case Some(car) if !car.status.isOccupied => userStorage.get(userId).flatMap {
-      case Some(user) => carStorage.update(carId, car.copy(status = car.status.copy(isOccupied = true, occupiedBy = Some(user))))
+      case Some(user) if !user.isRenting => userStorage.update(userId, user.copy(isRenting = true)).flatMap(_ =>
+        carStorage.update(carId, car.copy(status = car.status.copy(isOccupied = true, occupiedBy = Some(user.copy(isRenting = true))))))
+      case Some(_) => throw UserAlreadyRentingException(userId)
       case _ => throw UserNotFoundException(userId)
     }
     case _ => throw CarAlreadyOccupiedException(carId)

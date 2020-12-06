@@ -8,4 +8,4 @@ final case class CarAlreadyOccupiedException(carId: UUID) extends CarsharingExce
 
 final case class UserNotFoundException(userId: UUID) extends CarsharingException(s"User with id=$userId not found")
 
-final case class UserAlreadyStartedRenting(userId: UUID) extends CarsharingException(s"User with id=$userId is already renting a car")
+final case class UserAlreadyRentingException(userId: UUID) extends CarsharingException(s"User with id=$userId is already renting a car")

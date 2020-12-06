@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap
 class InMemoryUserStorage extends UserStorage[Task] {
   override def put(user: User): Task[Unit] = Task(storage.put(user.id, user))
 
+  override def update(id: UUID, user: User): Task[User] = Task(storage.replace(id, user)).map(_ => user)
+
   override def get(id: UUID): Task[Option[User]] = Task {
     if (storage.containsKey(id)) Some(storage.get(id))
     else None

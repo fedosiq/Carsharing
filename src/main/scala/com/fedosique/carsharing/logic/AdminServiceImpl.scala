@@ -17,7 +17,7 @@ class AdminServiceImpl(carStorage: CarStorage[Task], userStorage: UserStorage[Ta
   override def cars: Task[Seq[Car]] = carStorage.listAll()
 
   override def addUser(name: String, email: String): Task[User] = {
-    val user = User(UUID.randomUUID(), name, email)
+    val user = User(UUID.randomUUID(), name, email, isRenting = false)
     userStorage.put(user).map(_ => user)
   }
 
