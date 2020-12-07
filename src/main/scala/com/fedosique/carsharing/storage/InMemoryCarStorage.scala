@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters._
 
 class InMemoryCarStorage extends CarStorage[Task] {
 
-  override def put(id: UUID, car: Car): Task[Unit] = Task(storage.put(id, car))
+  override def put(car: Car): Task[Unit] = Task(storage.put(car.id, car))
 
   override def update(id: UUID, car: Car): Task[Car] = Task(storage.replace(id, car)).map(_ => car)
 
@@ -30,12 +30,12 @@ class InMemoryCarStorage extends CarStorage[Task] {
 
 object InMemoryCarStorage {
   private val sampleCars: List[Car] = List(
-    Car("kia rio", "blue", "а117рп78", Location(59.914412476005396, 30.318188229277073), Status(1, isOccupied = false, None), 0),
-    Car("bmw 3", "black", "г651та78", Location(59.91876362948221, 30.31814575195313), Status(0.5, isOccupied = true, None), 0)
+    Car(UUID.randomUUID(), "kia rio", "blue", "а117рп78", Location(59.914412476005396, 30.318188229277073), Status(1, isOccupied = false, None), 0),
+    Car(UUID.randomUUID(), "bmw 3", "black", "г651та78", Location(59.91876362948221, 30.31814575195313), Status(0.5, isOccupied = true, None), 0)
   )
 
   def init(storage: InMemoryCarStorage): Future[Unit] =
     (for {
-      _ <- Task.sequence(sampleCars.map(storage.put(UUID.randomUUID(), _)))
+      _ <- Task.sequence(sampleCars.map(storage.put(_)))
     } yield ()).runToFuture
 }

@@ -3,17 +3,18 @@ package com.fedosique.carsharing
 import io.circe._
 import io.circe.generic.semiauto._
 
+import java.util.UUID
 
-final case class Car(
-                      name: String,
-                      color: String,
-                      plateNumber: String,
-                      location: Location,
-                      status: Status,
-                      price: Double
-                    )
 
-final case class Status(fuel: Double, isOccupied: Boolean, occupiedBy: Option[User]) //or Option[UUID]
+final case class Car(id: UUID,
+                     name: String,
+                     color: String,
+                     plateNumber: String,
+                     location: Location,
+                     status: Status,
+                     price: Double)
+
+final case class Status(fuel: Double, isOccupied: Boolean, occupiedBy: Option[UUID])
 
 object Car {
   implicit val jsonDecoder: Decoder[Car] = deriveDecoder

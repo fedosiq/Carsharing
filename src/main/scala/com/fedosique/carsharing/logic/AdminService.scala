@@ -1,7 +1,8 @@
 package com.fedosique.carsharing.logic
 
-import java.util.UUID
 import com.fedosique.carsharing.{Car, User}
+
+import java.util.UUID
 
 trait AdminService[F[_]] {
 
