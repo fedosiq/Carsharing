@@ -5,6 +5,7 @@ import akka.http.scaladsl.server.Route
 import com.fedosique.carsharing.api.ClientApi
 import com.fedosique.carsharing.storage.{InMemoryCarStorage, InMemoryUserStorage}
 import monix.eval.Task
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ClientServiceModule(carStorage: InMemoryCarStorage, userStorage: InMemoryUserStorage) {
   private val service: ClientService[Task] = new ClientServiceImpl(carStorage, userStorage)

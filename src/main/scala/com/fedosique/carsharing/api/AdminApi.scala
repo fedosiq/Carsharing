@@ -8,8 +8,10 @@ import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 
+import scala.concurrent.ExecutionContext
 
-class AdminApi(service: AdminService[Task]) {
+
+class AdminApi(service: AdminService[Task])(implicit ec: ExecutionContext) {
 
   private val getCarById: Route = (get & path("cars" / JavaUUID)) { carId =>
     complete(service.getCar(carId).runToFuture)

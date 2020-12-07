@@ -1,10 +1,10 @@
 package com.fedosique.carsharing.logic
 
-import akka.http.scaladsl.server.Directives.pathPrefix
-import com.fedosique.carsharing.api.AdminApi
-import com.fedosique.carsharing.storage.{InMemoryCarStorage, InMemoryUserStorage}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import com.fedosique.carsharing.api.AdminApi
+import com.fedosique.carsharing.storage.{InMemoryCarStorage, InMemoryUserStorage}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class AdminServiceModule(carStorage: InMemoryCarStorage, userStorage: InMemoryUserStorage) {
   private val service = new AdminServiceImpl(carStorage, userStorage)

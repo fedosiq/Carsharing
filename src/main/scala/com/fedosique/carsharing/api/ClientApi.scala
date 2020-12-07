@@ -9,9 +9,10 @@ import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 
 import java.util.UUID
+import scala.concurrent.ExecutionContext
 
 
-class ClientApi(service: ClientService[Task]) {
+class ClientApi(service: ClientService[Task])(implicit ec: ExecutionContext) {
 
   private val getCarById: Route = (get & path("cars" / JavaUUID)) { carId =>
     complete(service.getCar(carId).runToFuture)
