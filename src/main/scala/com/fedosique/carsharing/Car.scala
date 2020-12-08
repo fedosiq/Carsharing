@@ -14,6 +14,7 @@ final case class Car(id: UUID,
                      status: Status,
                      price: Double)
 
+// TODO: убрать isOccupied
 final case class Status(fuel: Double, isOccupied: Boolean, occupiedBy: Option[UUID])
 
 object Car {

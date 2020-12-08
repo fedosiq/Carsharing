@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters._
 
 class InMemoryCarStorage extends CarStorage[Task] {
 
-  override def put(car: Car): Task[Unit] = Task(storage.put(car.id, car))
+  override def put(car: Car): Task[UUID] = Task(storage.put(car.id, car)).map(_ => car.id)
 
   override def update(id: UUID, car: Car): Task[Car] = Task(storage.replace(id, car)).map(_ => car)
 
@@ -36,6 +36,6 @@ object InMemoryCarStorage {
 
   def init(storage: InMemoryCarStorage): Future[Unit] =
     (for {
-      _ <- Task.sequence(sampleCars.map(storage.put(_)))
+      _ <- Task.sequence(sampleCars.map(storage.put))
     } yield ()).runToFuture
 }

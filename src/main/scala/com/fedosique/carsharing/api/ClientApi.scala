@@ -6,13 +6,13 @@ import com.fedosique.carsharing.Location
 import com.fedosique.carsharing.logic.ClientService
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 import monix.eval.Task
-import monix.execution.Scheduler.Implicits.global
+import monix.execution.Scheduler
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 
-class ClientApi(service: ClientService[Task])(implicit ec: ExecutionContext) {
+class ClientApi(service: ClientService[Task])(implicit ec: Scheduler) {
 
   private val getCarById: Route = (get & path("cars" / JavaUUID)) { carId =>
     complete(service.getCar(carId).runToFuture)

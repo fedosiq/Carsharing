@@ -7,7 +7,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryUserStorage extends UserStorage[Task] {
-  override def put(user: User): Task[Unit] = Task(storage.put(user.id, user))
+  override def put(user: User): Task[User] = Task(storage.put(user.id, user)).map(_ => user)
 
   override def update(id: UUID, user: User): Task[User] = Task(storage.replace(id, user)).map(_ => user)
 

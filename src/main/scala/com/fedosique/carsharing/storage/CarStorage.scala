@@ -7,7 +7,7 @@ import java.util.UUID
 
 trait CarStorage[F[_]] {
 
-  def put(car: Car): F[Unit]
+  def put(car: Car): F[UUID]
 
   def update(id: UUID, car: Car): F[Car]
 

@@ -29,14 +29,14 @@ class ClientServiceImpl(carStorage: CarStorage[Task], userStorage: UserStorage[T
   }
 
   override def leaveCar(carId: UUID, userId: UUID): Task[Car] = carStorage.get(carId).flatMap {
-    case Some(car) if car.status.isOccupied => userStorage.get(userId).flatMap {
+    case Some(car) if car.status.occupiedBy.isDefined => userStorage.get(userId).flatMap {
       case Some(user) if car.status.occupiedBy.contains(userId) =>
         userStorage.update(userId, user.copy(isRenting = false)).flatMap(_ =>
           carStorage.update(carId, car.copy(status = car.status.copy(isOccupied = false, occupiedBy = None))))
-//    case Some(_) => throw CarIsRentedByOtherUser(carId) // возможно избыточно
+      case Some(_) => throw CarOccupiedByOtherUser(carId)
       case _ => throw UserNotFoundException(userId)
     }
-//  case Some(_) => throw CarNotOccupiedException(carId)
+    case Some(_) => throw CarNotOccupiedException(carId)
     case _ => throw CarNotFoundException(carId)
   }
 }
