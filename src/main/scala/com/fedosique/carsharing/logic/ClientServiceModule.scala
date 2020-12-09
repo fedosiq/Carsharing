@@ -2,6 +2,7 @@ package com.fedosique.carsharing.logic
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import cats.implicits.catsStdInstancesForFuture
 import cats.{Monad, ~>}
 import com.fedosique.carsharing.api.ClientApi
 import com.fedosique.carsharing.storage.{CarStorage, UserStorage}
