@@ -2,9 +2,13 @@ package com.fedosique.carsharing
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import cats.~>
 import com.fedosique.carsharing.api.ApiModule
 import com.fedosique.carsharing.logic.{AdminServiceModule, ClientServiceModule}
 import com.fedosique.carsharing.storage.{InMemoryCarStorage, InMemoryUserStorage}
+import monix.eval.Task
+
+import scala.concurrent.Future
 
 
 object HttpApp extends App {
@@ -16,8 +20,13 @@ object HttpApp extends App {
   val userStorage = new InMemoryUserStorage
   InMemoryCarStorage.init(carStorage)
 
-  private val clientServiceModule = new ClientServiceModule(carStorage, userStorage)
-  private val adminServiceModule = new AdminServiceModule(carStorage, userStorage)
+  implicit private val evalDb = new (Task ~> Future) {
+    override def apply[T](task: Task[T]): Future[T] =
+      task.runToFuture(monix.execution.Scheduler.Implicits.global)
+  }
+
+  private val clientServiceModule = new ClientServiceModule[Task](carStorage, userStorage)
+  private val adminServiceModule = new AdminServiceModule[Task](carStorage, userStorage)
 
   private val apiModule = new ApiModule(clientServiceModule, adminServiceModule)
 

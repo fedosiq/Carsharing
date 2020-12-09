@@ -2,11 +2,8 @@ package com.fedosique.carsharing
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{Route, RouteConcatenation}
-import cats.implicits.catsStdInstancesForFuture
 import cats.~>
-import com.fedosique.carsharing.api.{AdminApi, CarsharingExceptionHandler, ClientApi}
+import com.fedosique.carsharing.api.ApiModule
 import com.fedosique.carsharing.logic._
 import com.fedosique.carsharing.storage._
 import com.rms.miu.slickcats.DBIOInstances._
@@ -21,7 +18,6 @@ object CoolHttpApp extends App {
   implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val ec = actorSystem.dispatcher
 
-
   val db = Database.forConfig("db")
   implicit private lazy val evalDb: DBIO ~> Future = new (DBIO ~> Future) {
     override def apply[T](dbio: DBIO[T]): Future[T] = db.run(dbio)
@@ -30,27 +26,13 @@ object CoolHttpApp extends App {
   private val carStorage = new SlickCarStorage
   private val userStorage = new SlickUserStorage
 
-  // TODO: написать обобщенные модули
-  // TODO: перенести в модули
-  private val adminService: AdminService[Future] = new AdminServiceGenericImpl[Future, DBIO](carStorage, userStorage)
-  private val clientService: ClientService[Future] = new ClientServiceGenericImpl[Future, DBIO](carStorage, userStorage)
+  private val clientServiceModule = new ClientServiceModule[DBIO](carStorage, userStorage)
+  private val adminServiceModule = new AdminServiceModule[DBIO](carStorage, userStorage)
 
-
-  val clientRoutes: Route = pathPrefix("api" / "v1") {
-    new ClientApi(clientService).routes
-  }
-  val adminRoutes: Route = pathPrefix("api" / "v1" / "admin") {
-    new AdminApi(adminService).routes
-  }
-  val routes: Route = Route.seal(
-    RouteConcatenation.concat(
-      clientRoutes,
-      adminRoutes
-    )
-  )(exceptionHandler = CarsharingExceptionHandler.exceptionHandler)
+  private val apiModule = new ApiModule(clientServiceModule, adminServiceModule)
 
   Http()
     .newServerAt("localhost", 8080)
-    .bind(routes)
+    .bind(apiModule.routes)
     .foreach(s => println(s"server started at $s"))
 }

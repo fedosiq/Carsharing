@@ -1,4 +1,5 @@
 package com.fedosique.carsharing.logic
+
 import cats._
 import com.fedosique.carsharing.storage.{CarStorage, UserStorage}
 import com.fedosique.carsharing.{Car, User}
@@ -6,7 +7,7 @@ import com.fedosique.carsharing.{Car, User}
 import java.util.UUID
 
 class AdminServiceGenericImpl[F[_]: Monad, DbEffect[_]: Monad](carStorage: CarStorage[DbEffect], userStorage: UserStorage[DbEffect])
-                                                (implicit evalDb: DbEffect ~> F) extends AdminService[F] {
+                                                                (implicit evalDb: DbEffect ~> F) extends AdminService[F] {
 
   def getCar(id: UUID): F[Option[Car]] = evalDb(carStorage.get(id))
 
