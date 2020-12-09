@@ -1,12 +1,12 @@
 package com.fedosique.carsharing
 
-import java.util.UUID
-
 import io.circe._
 import io.circe.generic.semiauto._
 
+import java.util.UUID
 
-final case class User(id: UUID, name: String)
+
+final case class User(id: UUID, name: String, email: String, isRenting: Boolean = false)
 
 object User {
   implicit val jsonDecoder: Decoder[User] = deriveDecoder

@@ -1,13 +1,15 @@
 package com.fedosique.carsharing.storage
 
-import java.util.UUID
-
 import com.fedosique.carsharing.Car
+
+import java.util.UUID
 
 
 trait CarStorage[F[_]] {
 
-  def put(id: UUID, car: Car): F[Unit]
+  def put(car: Car): F[UUID]
+
+  def update(id: UUID, car: Car): F[Car]
 
   def get(id: UUID): F[Option[Car]]
 
