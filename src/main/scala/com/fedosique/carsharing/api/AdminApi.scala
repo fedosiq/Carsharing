@@ -19,6 +19,11 @@ class AdminApi(service: AdminService[Future]) {
       complete(service.addCar(car))
     }
   }
+  private val updateCar: Route = (post & path("cars" / "update")) {
+    entity(as[Car]) { car =>
+      complete(service.updateCar(car))
+    }
+  }
   private val allCars: Route = (get & path("cars")) {
     complete(service.cars)
   }
@@ -31,5 +36,5 @@ class AdminApi(service: AdminService[Future]) {
     complete(service.getUser(userID))
   }
 
-  val routes: Route = getCarById ~ addCar ~ allCars ~ addUser ~ getUserById
+  val routes: Route = getCarById ~ addCar ~ updateCar ~ allCars ~ addUser ~ getUserById
 }

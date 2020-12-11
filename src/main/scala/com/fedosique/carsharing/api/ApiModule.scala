@@ -5,10 +5,12 @@ import com.fedosique.carsharing.logic.{AdminServiceModule, ClientServiceModule}
 
 
 class ApiModule[DbEffect[_]](clientServiceModule: ClientServiceModule[DbEffect], adminServiceModule: AdminServiceModule[DbEffect]) {
+  val carServiceApi = new CarServiceApi
   val routes: Route = Route.seal(
     RouteConcatenation.concat(
       clientServiceModule.routes,
-      adminServiceModule.routes
+      adminServiceModule.routes,
+      carServiceApi.routes
     )
   )(exceptionHandler = CarsharingExceptionHandler.exceptionHandler)
 }

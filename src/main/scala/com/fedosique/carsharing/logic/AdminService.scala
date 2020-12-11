@@ -10,6 +10,8 @@ trait AdminService[F[_]] {
 
   def addCar(car: Car): F[UUID]
 
+  def updateCar(car: Car): F[Car]
+
   def cars: F[Seq[Car]]
 
   def addUser(name: String, email: String): F[User]

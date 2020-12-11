@@ -5,7 +5,6 @@ import akka.http.scaladsl.server.Route
 import com.fedosique.carsharing.Location
 import com.fedosique.carsharing.logic.ClientService
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
-import monix.execution.Scheduler
 
 import java.util.UUID
 import scala.concurrent.Future
@@ -21,12 +20,12 @@ class ClientApi(service: ClientService[Future]) {
       complete(service.availableCars(Location(lat, lon)))
     }
   }
-  private val occupyCar: Route = (post & path("cars" / JavaUUID / "occupy" )) { carId =>
+  private val occupyCar: Route = (post & path("cars" / JavaUUID / "occupy")) { carId =>
     parameter("userId".as[UUID]) { userId =>
       complete(service.occupyCar(carId, userId))
     }
   }
-  private val leaveCar: Route = (post & path("cars" / JavaUUID / "leave" )) { carId =>
+  private val leaveCar: Route = (post & path("cars" / JavaUUID / "leave")) { carId =>
     parameter("userId".as[UUID]) { userId =>
       complete(service.leaveCar(carId, userId))
     }

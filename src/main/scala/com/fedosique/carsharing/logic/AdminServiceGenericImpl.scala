@@ -13,6 +13,8 @@ class AdminServiceGenericImpl[F[_]: Monad, DbEffect[_]: Monad](carStorage: CarSt
 
   def addCar(car: Car): F[UUID] = evalDb(carStorage.put(car))
 
+  def updateCar(car: Car): F[Car] = evalDb(carStorage.update(car.id, car))
+
   def cars: F[Seq[Car]] = evalDb(carStorage.listAll())
 
   def addUser(name: String, email: String): F[User] = evalDb(userStorage.put(User(UUID.randomUUID(), name, email)))
