@@ -4,6 +4,20 @@ version := "0.1"
 
 scalaVersion := "2.13.3"
 
+//scalacOptions ++= Seq(
+//  "-deprecation",
+//  "-encoding", "UTF-8",
+//  "-language:experimental.macros",
+//  "-feature",
+//  "-unchecked",
+//  "-Xfatal-warnings",
+//  "-Xlint",
+//  "-Ywarn-numeric-widen",
+//  "-Ywarn-value-discard",
+//  "-Ywarn-dead-code", // Warn when dead code is identified.
+//  "-Ywarn-extra-implicit"
+//)
+
 val circeVersion = "0.12.1"
 
 libraryDependencies ++= Seq(
@@ -20,7 +34,11 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.6.10",
   "com.typesafe.akka" %% "akka-stream" % "2.6.10",
   "com.typesafe.akka" %% "akka-http" % "10.2.1",
-  "de.heikoseeberger" %% "akka-http-circe" % "1.35.2"
+  "de.heikoseeberger" %% "akka-http-circe" % "1.35.2",
+
+  "com.beachape" %% "enumeratum" % "1.6.1",
+  "com.beachape" %% "enumeratum-circe" % "1.6.1"
+
 )
 
 libraryDependencies ++= Seq(

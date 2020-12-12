@@ -3,7 +3,7 @@ package com.fedosique.carsharing.OnboardApp
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
-import com.fedosique.carsharing.{Car, Location, Status}
+import com.fedosique.carsharing.models.{Car, Location, Status}
 import io.circe.jackson.parse
 import io.circe.syntax.EncoderOps
 

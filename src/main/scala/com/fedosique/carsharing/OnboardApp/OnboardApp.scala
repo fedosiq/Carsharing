@@ -30,7 +30,7 @@ object OnboardApp extends App {
   import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
 
   Http() //TODO: add retries
-    .singleRequest(Get("http://localhost:8080/events"))
+    .singleRequest(Get("http://localhost:8080/api/v1/events"))
     .flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
     .foreach(events =>
       events

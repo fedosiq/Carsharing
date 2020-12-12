@@ -3,6 +3,7 @@ package com.fedosique.carsharing
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.Materializer
+import cats.implicits.catsStdInstancesForFuture
 import cats.~>
 import com.fedosique.carsharing.api.ApiModule
 import com.fedosique.carsharing.logic._
@@ -14,7 +15,7 @@ import slick.jdbc.JdbcBackend.Database
 import scala.concurrent.Future
 
 
-object CoolHttpApp extends App {
+object CarsharingHttpApp extends App {
 
   implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val materializer = Materializer(actorSystem)
@@ -24,14 +25,22 @@ object CoolHttpApp extends App {
   implicit private lazy val evalDb: DBIO ~> Future = new (DBIO ~> Future) {
     override def apply[T](dbio: DBIO[T]): Future[T] = db.run(dbio)
   }
+  implicit private lazy val FK: Future ~> Future = new (Future ~> Future) {
+    override def apply[T](f: Future[T]): Future[T] = f
+  }
 
   private val carStorage = new SlickCarStorage
   private val userStorage = new SlickUserStorage
 
-  private val clientServiceModule = new ClientServiceModule[DBIO](carStorage, userStorage)
-  private val adminServiceModule = new AdminServiceModule[DBIO](carStorage, userStorage)
+  private val clientService = new ClientServiceGenericImpl[Future, DBIO](carStorage, userStorage)
+  private val adminService = new AdminServiceGenericImpl[Future, DBIO](carStorage, userStorage)
+  private val carService = new CarServiceImpl
 
-  private val apiModule = new ApiModule(clientServiceModule, adminServiceModule)
+  private val clientServiceModule = new ClientServiceModule(clientService)
+  private val adminServiceModule = new AdminServiceModule(adminService)
+  private val carServiceModule = new CarServiceModule(carService)
+
+  private val apiModule = new ApiModule(clientServiceModule, adminServiceModule, carServiceModule)
 
   Http()
     .newServerAt("localhost", 8080)

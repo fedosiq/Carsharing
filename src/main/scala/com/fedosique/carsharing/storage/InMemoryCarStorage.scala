@@ -1,6 +1,6 @@
 package com.fedosique.carsharing.storage
 
-import com.fedosique.carsharing.{Car, Location, Status}
+import com.fedosique.carsharing.models.{Car, Location, Status}
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 

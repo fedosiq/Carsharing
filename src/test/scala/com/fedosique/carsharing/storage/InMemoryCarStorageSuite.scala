@@ -1,8 +1,7 @@
 package com.fedosique.carsharing.storage
 
 import java.util.UUID
-
-import com.fedosique.carsharing.{Car, Location, Status}
+import com.fedosique.carsharing.models.{Car, Location, Status}
 import monix.execution.Scheduler.Implicits.global
 import org.scalatest.flatspec.AsyncFlatSpec
 

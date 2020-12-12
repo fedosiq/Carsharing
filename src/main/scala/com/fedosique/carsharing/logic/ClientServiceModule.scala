@@ -1,21 +1,15 @@
 package com.fedosique.carsharing.logic
 
-import akka.actor.ActorSystem
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import cats.implicits.catsStdInstancesForFuture
-import cats.{Monad, ~>}
+import cats.~>
 import com.fedosique.carsharing.api.ClientApi
-import com.fedosique.carsharing.storage.{CarStorage, UserStorage}
-import monix.execution.Scheduler.Implicits.global
 
 import scala.concurrent.Future
 
 
-class ClientServiceModule[DbEffect[_] : Monad](carStorage: CarStorage[DbEffect], userStorage: UserStorage[DbEffect])
-                                              (implicit evalDb: DbEffect ~> Future, actorSystem: ActorSystem) {
-  private val service: ClientService[Future] = new ClientServiceGenericImpl(carStorage, userStorage)
+class ClientServiceModule[F[_]](clientService: ClientService[F])(implicit FK: F ~> Future) {
   val routes: Route = pathPrefix("api" / "v1") {
-    new ClientApi(service).routes
+    new ClientApi(clientService).routes
   }
 }

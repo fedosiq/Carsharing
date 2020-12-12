@@ -9,13 +9,14 @@ import cats.syntax.functor._
 import cats.{Monad, ~>}
 import com.fedosique.carsharing._
 import com.fedosique.carsharing.api.ServerSentEventCodec.sseEncoder
+import com.fedosique.carsharing.models.{Car, Location}
 import com.fedosique.carsharing.storage.{CarStorage, UserStorage}
 import io.circe.syntax.EncoderOps
 
 import java.util.UUID
 
 
-class ClientServiceGenericImpl[F[_]: Monad, DbEffect[_]: Monad](carStorage: CarStorage[DbEffect],
+class ClientServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: CarStorage[DbEffect],
                                                                   userStorage: UserStorage[DbEffect])
                                                                  (implicit evalDb: DbEffect ~> F, actorSystem: ActorSystem) extends ClientService[F] {
 
@@ -60,7 +61,7 @@ class ClientServiceGenericImpl[F[_]: Monad, DbEffect[_]: Monad](carStorage: CarS
 
   private def occupyRequest(carId: UUID, userId: UUID) = HttpRequest(
     method = HttpMethods.POST,
-    uri = "http://localhost:8080/events",
+    uri = "http://localhost:8080/api/v1/events",
     entity = HttpEntity(
       ContentTypes.`application/json`,
       s"${ServerSentEvent(s"$carId $userId", "occupy").asJson.noSpaces}"
@@ -69,7 +70,7 @@ class ClientServiceGenericImpl[F[_]: Monad, DbEffect[_]: Monad](carStorage: CarS
 
   private def leaveRequest(carId: UUID, userId: UUID) = HttpRequest(
     method = HttpMethods.POST,
-    uri = "http://localhost:8080/events",
+    uri = "http://localhost:8080/api/v1/events",
     entity = HttpEntity(
       ContentTypes.`application/json`,
       s"${ServerSentEvent(s"$carId $userId", "leave").asJson.noSpaces}"

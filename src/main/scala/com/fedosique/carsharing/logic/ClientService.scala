@@ -1,6 +1,6 @@
 package com.fedosique.carsharing.logic
 
-import com.fedosique.carsharing._
+import com.fedosique.carsharing.models.{Car, Location}
 
 import java.util.UUID
 

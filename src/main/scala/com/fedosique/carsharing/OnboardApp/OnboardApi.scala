@@ -2,7 +2,7 @@ package com.fedosique.carsharing.OnboardApp
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.fedosique.carsharing.Car
+import com.fedosique.carsharing.models.Car
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 
 
