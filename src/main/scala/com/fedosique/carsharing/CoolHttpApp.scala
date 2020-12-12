@@ -2,6 +2,7 @@ package com.fedosique.carsharing
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.stream.Materializer
 import cats.~>
 import com.fedosique.carsharing.api.ApiModule
 import com.fedosique.carsharing.logic._
@@ -16,6 +17,7 @@ import scala.concurrent.Future
 object CoolHttpApp extends App {
 
   implicit val actorSystem: ActorSystem = ActorSystem()
+  implicit val materializer = Materializer(actorSystem)
   implicit val ec = actorSystem.dispatcher
 
   val db = Database.forConfig("db")

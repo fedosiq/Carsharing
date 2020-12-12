@@ -1,44 +1,44 @@
 package com.fedosique.carsharing.api
 
-import akka.actor.ActorSystem
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.scaladsl.{Source, SourceQueueWithComplete}
-import akka.stream.{ActorMaterializer, OverflowStrategy}
+import com.fedosique.carsharing.api.ServerSentEventCodec.{sseDecoder, sseEncoder}
+import com.fedosique.carsharing.logic.CarServiceImpl
+import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.syntax.EncoderOps
+import io.circe.{Decoder, Encoder}
 
-import scala.concurrent.duration.DurationInt
 
-class CarServiceApi {
+/**
+ * Служит для отправки сообщений на машины
+ * */
+class CarServiceApi(carService: CarServiceImpl){
 
   import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
 
-  implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val materializer = ActorMaterializer()
-
-  val sourceDecl: Source[String, SourceQueueWithComplete[String]] = Source.queue[String](bufferSize = 100, OverflowStrategy.dropHead)
-  val (sourceMat, source) = sourceDecl.preMaterialize()
-
-  val eventSource = source.map(ServerSentEvent(_)).keepAlive(1.second, () => ServerSentEvent.heartbeat)
-
-  sourceMat.offer("occupy")
-  sourceMat.offer("leave")
-
-  private val events: Route =
+  private val events: Route = {
     (get & path("events")) {
       complete {
-        eventSource
+        carService.eventSource
+        //  .filterNot(_.data.contains("ping"))
       }
-    } ~ (post & path("events")) {
-      entity(as[String]) { event =>
-        complete {
-          sourceMat.offer(event)
-          eventSource
+    } ~
+      (post & path("events")) {
+        entity(as[ServerSentEvent]) { event =>
+          complete {
+            carService.queue.offer(event)
+            s"pushed ${event.asJson} to events queue" //TODO: change to json response?
+          }
         }
       }
-    }
-
+  }
 
   val routes: Route = events
+}
 
+object ServerSentEventCodec {
+  implicit val sseDecoder: Decoder[ServerSentEvent] = deriveDecoder
+  implicit val sseEncoder: Encoder[ServerSentEvent] = deriveEncoder
 }

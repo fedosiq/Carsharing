@@ -1,5 +1,6 @@
 package com.fedosique.carsharing.logic
 
+import akka.actor.ActorSystem
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import cats.implicits.catsStdInstancesForFuture
@@ -12,7 +13,7 @@ import scala.concurrent.Future
 
 
 class ClientServiceModule[DbEffect[_] : Monad](carStorage: CarStorage[DbEffect], userStorage: UserStorage[DbEffect])
-                                              (implicit evalDb: DbEffect ~> Future) {
+                                              (implicit evalDb: DbEffect ~> Future, actorSystem: ActorSystem) {
   private val service: ClientService[Future] = new ClientServiceGenericImpl(carStorage, userStorage)
   val routes: Route = pathPrefix("api" / "v1") {
     new ClientApi(service).routes

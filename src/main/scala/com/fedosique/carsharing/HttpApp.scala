@@ -2,6 +2,7 @@ package com.fedosique.carsharing
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.stream.Materializer
 import cats.~>
 import com.fedosique.carsharing.api.ApiModule
 import com.fedosique.carsharing.logic.{AdminServiceModule, ClientServiceModule}
@@ -14,6 +15,7 @@ import scala.concurrent.Future
 object HttpApp extends App {
 
   implicit val actorSystem: ActorSystem = ActorSystem()
+  implicit val materializer = Materializer(actorSystem)
   implicit val ec = actorSystem.dispatcher
 
   val carStorage = new InMemoryCarStorage
@@ -22,7 +24,7 @@ object HttpApp extends App {
 
   implicit private val evalDb = new (Task ~> Future) {
     override def apply[T](task: Task[T]): Future[T] =
-      task.runToFuture(monix.execution.Scheduler.Implicits.global)
+      task.runToFuture(monix.execution.Scheduler.global)
   }
 
   private val clientServiceModule = new ClientServiceModule[Task](carStorage, userStorage)
