@@ -6,7 +6,8 @@ CREATE TABLE users
     id         uuid PRIMARY KEY NOT NULL,
     name       VARCHAR          NOT NULL,
     email      VARCHAR          NOT NULL,
-    is_renting Boolean          NOT NULL
+    is_renting Boolean          NOT NULL,
+    debt       Numeric          NOT NULL
 );
 
 CREATE TABLE cars
@@ -16,18 +17,21 @@ CREATE TABLE cars
     color        VARCHAR          NOT NULL,
     plate_number VARCHAR          NOT NULL,
     lat          NUMERIC          NOT NULL,
-    lon         NUMERIC          NOT NULL,
+    lon          NUMERIC          NOT NULL,
     fuel         NUMERIC          NOT NULL,
     is_occupied  Boolean          NOT NULL,
-    occupied_by  uuid, -- or occupierId?
+    occupied_by  uuid,
     price        NUMERIC          NOT NULL
 );
 
-CREATE TABLE actions
+CREATE TABLE events
 (
-    action    VARCHAR NOT NULL,--car rented, car left
-    userId    uuid    NOT NULL,
-    carId     uuid    NOT NULL,
+    id        uuid PRIMARY KEY NOT NUll,
+    event     VARCHAR          NOT NULL,--car rented, car left
+    car_id    uuid             NOT NULL,
+    user_id   uuid             NOT NULL,
+    lat       NUMERIC          NOT NULL,
+    lon       NUMERIC          NOT NULL,
     timestamp TIMESTAMP DEFAULT now()
 );
 
@@ -35,7 +39,8 @@ INSERT INTO users
 VALUES ('00000000-0000-0000-0000-000000000001',
         'John',
         'john.smith@example.com',
-        false);
+        false,
+        0.0);
 
 INSERT INTO cars
 VALUES ('00000000-0000-0000-0000-100000000001',

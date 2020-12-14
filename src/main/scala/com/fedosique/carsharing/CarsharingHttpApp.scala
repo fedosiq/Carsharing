@@ -31,8 +31,9 @@ object CarsharingHttpApp extends App {
 
   private val carStorage = new SlickCarStorage
   private val userStorage = new SlickUserStorage
+  private val eventStorage = new SlickEventStorage
 
-  private val clientService = new ClientServiceGenericImpl[Future, DBIO](carStorage, userStorage)
+  private val clientService = new ClientServiceGenericImpl[Future, DBIO](carStorage, userStorage, eventStorage)
   private val adminService = new AdminServiceGenericImpl[Future, DBIO](carStorage, userStorage)
   private val carService = new CarServiceImpl
 

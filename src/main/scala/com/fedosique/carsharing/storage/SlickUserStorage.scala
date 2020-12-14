@@ -19,9 +19,11 @@ class SlickUserStorage(implicit ec: ExecutionContext) extends UserStorage[DBIO] 
 
     def isRenting: Rep[Boolean] = column("is_renting")
 
+    def debt: Rep[Double] = column("debt")
+
 
     override def * : ProvenShape[User] =
-      (id, name, email, isRenting) <> ((User.apply _).tupled, User.unapply)
+      (id, name, email, isRenting, debt) <> ((User.apply _).tupled, User.unapply)
   }
 
   private val AllUsers = TableQuery[UsersTable]
@@ -39,6 +41,8 @@ class SlickUserStorage(implicit ec: ExecutionContext) extends UserStorage[DBIO] 
       .filter(_.id === id)
       .result
       .headOption
+
+  def listAll(): DBIO[Seq[User]] = AllUsers.result
 
   def contains(id: UUID): DBIO[Boolean] = get(id).map(_.isDefined)
 }

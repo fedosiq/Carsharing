@@ -11,5 +11,7 @@ trait UserStorage[F[_]] {
 
   def get(id: UUID): F[Option[User]]
 
+  def listAll(): F[Seq[User]]
+
   def contains(id: UUID): F[Boolean]
 }
