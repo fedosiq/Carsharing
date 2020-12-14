@@ -1,13 +1,17 @@
 package com.fedosique.carsharing.api
 
 import akka.http.scaladsl.server.{Route, RouteConcatenation}
-import com.fedosique.carsharing.logic.{AdminServiceModule, ClientServiceModule}
+import akka.stream.Materializer
+import com.fedosique.carsharing.logic.{AdminServiceModule, CarServiceModule, ClientServiceModule}
 
-class ApiModule(clientServiceModule: ClientServiceModule, adminServiceModule: AdminServiceModule) {
+
+class ApiModule[F[_]](clientServiceModule: ClientServiceModule[F], adminServiceModule: AdminServiceModule[F], carServiceModule: CarServiceModule)
+                            (implicit materializer: Materializer) {
   val routes: Route = Route.seal(
     RouteConcatenation.concat(
       clientServiceModule.routes,
-      adminServiceModule.routes
+      adminServiceModule.routes,
+      carServiceModule.routes
     )
   )(exceptionHandler = CarsharingExceptionHandler.exceptionHandler)
 }

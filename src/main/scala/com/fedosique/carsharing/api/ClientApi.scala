@@ -2,34 +2,33 @@ package com.fedosique.carsharing.api
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.fedosique.carsharing.Location
+import cats.~>
 import com.fedosique.carsharing.logic.ClientService
+import com.fedosique.carsharing.models.Location
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
-import monix.eval.Task
-import monix.execution.Scheduler
 
 import java.util.UUID
-import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 
-class ClientApi(service: ClientService[Task])(implicit ec: Scheduler) {
+class ClientApi[F[_]](service: ClientService[F])(implicit FK: F ~> Future) {
 
   private val getCarById: Route = (get & path("cars" / JavaUUID)) { carId =>
-    complete(service.getCar(carId).runToFuture)
+    complete(FK(service.getCar(carId)))
   }
   private val availableCars: Route = (get & path("cars")) {
-    parameters("lat".as[Double], "lon".as[Double]) { (lat, lon) =>
-      complete(service.availableCars(Location(lat, lon)).runToFuture)
+    parameters("lat".as[Double], "lon".as[Double], "limit".as[Int]) { (lat, lon, limit) =>
+      complete(FK(service.availableCars(Location(lat, lon), limit)))
     }
   }
-  private val occupyCar: Route = (post & path("cars" / JavaUUID / "occupy" )) { carId =>
+  private val occupyCar: Route = (post & path("cars" / JavaUUID / "occupy")) { carId =>
     parameter("userId".as[UUID]) { userId =>
-      complete(service.occupyCar(carId, userId).runToFuture)
+      complete(FK(service.occupyCar(carId, userId)))
     }
   }
-  private val leaveCar: Route = (post & path("cars" / JavaUUID / "leave" )) { carId =>
+  private val leaveCar: Route = (post & path("cars" / JavaUUID / "leave")) { carId =>
     parameter("userId".as[UUID]) { userId =>
-      complete(service.leaveCar(carId, userId).runToFuture)
+      complete(FK(service.leaveCar(carId, userId)))
     }
   }
 

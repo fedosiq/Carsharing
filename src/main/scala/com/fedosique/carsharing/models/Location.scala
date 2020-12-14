@@ -1,4 +1,4 @@
-package com.fedosique.carsharing
+package com.fedosique.carsharing.models
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
