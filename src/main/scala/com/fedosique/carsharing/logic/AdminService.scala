@@ -12,7 +12,7 @@ trait AdminService[F[_]] {
 
   def updateCar(car: Car): F[Car]
 
-  def cars: F[Seq[Car]]
+  def cars(limit: Int = 20): F[Seq[Car]]
 
   def addUser(name: String, email: String): F[User]
 

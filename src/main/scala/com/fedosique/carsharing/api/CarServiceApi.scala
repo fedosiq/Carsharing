@@ -22,14 +22,13 @@ class CarServiceApi(carService: CarServiceImpl){
     (get & path("events")) {
       complete {
         carService.eventSource
-        //  .filterNot(_.data.contains("ping"))
       }
     } ~
       (post & path("events")) {
         entity(as[ServerSentEvent]) { event =>
           complete {
             carService.queue.offer(event)
-            s"pushed ${event.asJson} to events queue" //TODO: change to json response?
+            s"pushed ${event.asJson} to events queue"
           }
         }
       }

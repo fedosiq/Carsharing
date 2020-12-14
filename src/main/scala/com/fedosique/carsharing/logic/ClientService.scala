@@ -19,9 +19,10 @@ trait ClientService[F[_]] {
    * Shows available cars nearby
    *
    * @param loc user's location
+   * @param limit amount of cars to be returned
    * @return available cars sorted by distance from user's location
    * */
-  def availableCars(loc: Location): F[Seq[Car]]
+  def availableCars(loc: Location, limit: Int = 20): F[Seq[Car]]
 
   /**
    * Occupies car with given user

@@ -3,6 +3,7 @@ package com.fedosique.carsharing.logic
 import cats._
 import com.fedosique.carsharing.storage.{CarStorage, UserStorage}
 import com.fedosique.carsharing.models.{Car, User}
+import cats.syntax.functor._
 
 import java.util.UUID
 
@@ -15,7 +16,7 @@ class AdminServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: Car
 
   override def updateCar(car: Car): F[Car] = evalDb(carStorage.update(car.id, car))
 
-  override def cars: F[Seq[Car]] = evalDb(carStorage.listAll())
+  override def cars(limit: Int = 20): F[Seq[Car]] = evalDb(carStorage.listAll().map(_.take(limit)))
 
   override def addUser(name: String, email: String): F[User] = evalDb(userStorage.put(User(UUID.randomUUID(), name, email)))
 

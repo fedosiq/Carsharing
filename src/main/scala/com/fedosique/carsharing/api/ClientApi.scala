@@ -17,8 +17,8 @@ class ClientApi[F[_]](service: ClientService[F])(implicit FK: F ~> Future) {
     complete(FK(service.getCar(carId)))
   }
   private val availableCars: Route = (get & path("cars")) {
-    parameters("lat".as[Double], "lon".as[Double]) { (lat, lon) =>
-      complete(FK(service.availableCars(Location(lat, lon))))
+    parameters("lat".as[Double], "lon".as[Double], "limit".as[Int]) { (lat, lon, limit) =>
+      complete(FK(service.availableCars(Location(lat, lon), limit)))
     }
   }
   private val occupyCar: Route = (post & path("cars" / JavaUUID / "occupy")) { carId =>

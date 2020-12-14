@@ -26,7 +26,9 @@ class AdminApi[F[_]](service: AdminService[F])(implicit FK: F ~> Future) {
     }
   }
   private val allCars: Route = (get & path("cars")) {
-    complete(FK(service.cars))
+    parameter("limit".as[Int]) { (limit) =>
+      complete(FK(service.cars(limit)))
+    }
   }
   private val addUser: Route = (post & path("users" / "add")) {
     parameters("name".as[String], "email".as[String]) { (name, email) =>
