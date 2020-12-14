@@ -1,24 +1,64 @@
 package com.fedosique.carsharing.OnboardApp
 
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
-import com.fedosique.carsharing.models.{Car, Location, Status}
-import io.circe.jackson.parse
+import akka.http.scaladsl.model.sse.ServerSentEvent
+import akka.stream.scaladsl.Source
+import com.fedosique.carsharing.models.Car
 import io.circe.syntax.EncoderOps
+import io.circe.{ParsingFailure, parser}
 
 import java.util.UUID
-import scala.concurrent.ExecutionContext
+import java.util.concurrent.atomic.AtomicReference
 import scala.concurrent.duration.DurationInt
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class OnboardService(implicit actorSystem: ActorSystem, ec: ExecutionContext) {
+  val thisCarId = UUID.fromString("00000000-0000-0000-0000-100000000001")
 
-  var thisCar = Car(UUID.fromString("00000000-0000-0000-0000-100000000001"), "kia rio", "blue", "а117рп78",
-    Location(59.914412476005396, 30.318188229277073), Status(1, isOccupied = false, None), 0)
+  def initState(id: UUID): Future[Car] = {
+    val request = HttpRequest(
+      method = HttpMethods.GET,
+      uri = s"http://localhost:8080/api/v1/admin/cars/$id"
+    )
+    Http()
+      .singleRequest(request)
+      .flatMap(_.entity.toStrict(2.seconds))
+      .map(resp => parser.decode[Car](resp.data.utf8String) match {
+        case Right(car) => car
+        case Left(error) => throw ParsingFailure(error.getMessage, error)
+      })
+  }
 
-  //TODO: добавить установку состояния и отделить от отправки состояния
-  def sendUpdate(car: Car) = {
+  def processEvents(events: Source[ServerSentEvent, NotUsed], carState: AtomicReference[Car]) =
+    events
+      .filter(_.data.contains(thisCarId.toString))
+      .map(msg => msg.data.split(" ").toList match {
+
+        case List(_, userId) if msg.eventType.contains("occupy") =>
+          val currentState = carState.get()
+          carState.set(currentState.copy(status = currentState.status.copy(isOccupied = true, occupiedBy = Some(UUID.fromString(userId)))))
+          println(carState.get().asJson)
+
+        case List(_, _) if msg.eventType.contains("leave") =>
+          val currentState = carState.get()
+          carState.set(currentState.copy(status = currentState.status.copy(isOccupied = false, occupiedBy = None)))
+          println(carState.get().asJson) //TODO: use logging
+
+        case _ => println("Bad request")
+      })
+      .runForeach(println)
+
+  def updateLoop(carState: AtomicReference[Car]): Future[Car] = {
+    Thread.sleep(10000)
+    //change car state
+    sendUpdate(carState.get()).flatMap(_ => updateLoop(carState))
+  }
+
+  def sendUpdate(car: Car): Future[Car] = {
     println(car)
     val request = HttpRequest(
       method = HttpMethods.POST,
@@ -31,7 +71,9 @@ class OnboardService(implicit actorSystem: ActorSystem, ec: ExecutionContext) {
     Http()
       .singleRequest(request)
       .flatMap(_.entity.toStrict(2.seconds))
-      .map(resp => parse(resp.data.utf8String))
+      .map(resp => parser.decode[Car](resp.data.utf8String) match {
+        case Right(car) => car
+        case Left(error) => throw ParsingFailure(error.getMessage, error)
+      })
   }
-  def sync = sendUpdate(thisCar)
 }

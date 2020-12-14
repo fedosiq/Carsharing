@@ -65,8 +65,7 @@ class ClientServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: Ca
             _ <- userStorage.update(userId, user.copy(isRenting = false, debt = user.debt + calcDebt(occupationTime, leaveTime, car.price)))
             _ <- eventStorage.put(Event(UUID.randomUUID(), "leave", carId, userId, car.location, leaveTime))
           } yield car
-          case a => println(a)
-            throw CarNotOccupiedException(carId)
+          case _ => throw CarNotOccupiedException(carId)
         }
 
       case Some(_) => throw CarOccupiedByOtherUser(carId)

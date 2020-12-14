@@ -7,9 +7,9 @@ import akka.http.scaladsl.client.RequestBuilding.Get
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
-import io.circe.syntax.EncoderOps
+import com.fedosique.carsharing.models.Car
 
-import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
 import scala.concurrent.ExecutionContextExecutor
 
 object OnboardApp extends App {
@@ -18,35 +18,17 @@ object OnboardApp extends App {
   implicit val ec: ExecutionContextExecutor = actorSystem.dispatcher
 
   private val service = new OnboardService
-  private val carApi = new OnboardApi(service)
-  private val routes = carApi.route
-
-
-  Http()
-    .newServerAt("localhost", 8081)
-    .bind(routes)
-    .foreach(s => println(s"server started at $s"))
 
   import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
 
-  Http() //TODO: add retries
-    .singleRequest(Get("http://localhost:8080/api/v1/events"))
-    .flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
-    .foreach(events =>
-      events
-        .filter(_.data.contains(service.thisCar.id.toString))
-        .map(msg => msg.data.split(" ").toList match {
+  service.initState(service.thisCarId).flatMap(car => {
+    val carState = new AtomicReference[Car](car)
+    println(carState)
+    service.updateLoop(carState)
 
-          case _ :: userId :: Nil if msg.eventType.contains("occupy") =>
-            service.thisCar = service.thisCar.copy(status = service.thisCar.status.copy(isOccupied = true, occupiedBy = Some(UUID.fromString(userId))))
-            println(service.thisCar.asJson)
-
-          case _ :: _ :: Nil if msg.eventType.contains("leave") =>
-            service.thisCar = service.thisCar.copy(status = service.thisCar.status.copy(isOccupied = false, occupiedBy = None))
-            println(service.thisCar.asJson)
-
-          case _ => println("Bad request")
-        })
-        .runForeach(println))
-
+    Http()
+      .singleRequest(Get("http://localhost:8080/api/v1/events"))
+      .flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
+      .map(events => service.processEvents(events, carState))
+  })
 }

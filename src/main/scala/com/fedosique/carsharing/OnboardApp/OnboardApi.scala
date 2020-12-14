@@ -12,9 +12,9 @@ class OnboardApi(service: OnboardService) {
       complete(service.sendUpdate(carInfo))
     }
   }
-  private val sendCurrentState: Route = (post & path("api" / "v1" / "update")) {
-    complete(service.sync)
-  }
+//  private val sendCurrentState: Route = (post & path("api" / "v1" / "update")) {
+//    complete(service.sync)
+//  }
 
-  val route: Route = sendUpdate ~ sendCurrentState
+  val route: Route = sendUpdate
 }
