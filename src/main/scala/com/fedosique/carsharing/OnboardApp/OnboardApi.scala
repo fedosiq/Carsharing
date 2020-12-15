@@ -5,7 +5,9 @@ import akka.http.scaladsl.server.Route
 import com.fedosique.carsharing.models.Car
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 
-
+/**
+ * Использовался для дебага
+ * */
 class OnboardApi(service: OnboardService) {
   private val sendUpdate: Route = (post & path("api" / "v1" / "update")) {
     entity(as[Car]) { carInfo =>
