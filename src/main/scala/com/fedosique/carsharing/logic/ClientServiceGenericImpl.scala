@@ -30,12 +30,12 @@ class ClientServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: Ca
   override def getCar(id: UUID): F[Option[Car]] = evalDb(carStorage.get(id).map(_.filterNot(_.status.isOccupied)))
 
   override def availableCars(loc: Location, limit: Int = 20): F[Seq[Car]] =
-    evalDb(carStorage.listAll()
-      .map(cars =>
-        cars.filterNot(_.status.isOccupied)
-          .sortBy(car => DistanceCalculator.calculateDistanceInKM(loc, car.location))
-          .take(limit)
-      ))
+    evalDb(carStorage.listAll().map(cars =>
+      cars
+        .filterNot(_.status.isOccupied)
+        .sortBy(car => DistanceCalculator.calculateDistanceInKM(loc, car.location))
+        .take(limit)
+    ))
 
   override def occupyCar(carId: UUID, userId: UUID): F[Car] = getCar(carId).flatMap {
     case Some(car) => evalDb(userStorage.get(userId).flatMap {
@@ -75,9 +75,8 @@ class ClientServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: Ca
     case Some(_) => throw CarNotOccupiedException(carId)
     case _ => throw CarNotFoundException(carId)
   })
-
-
 }
+
 
 object ClientServiceGenericImpl {
 

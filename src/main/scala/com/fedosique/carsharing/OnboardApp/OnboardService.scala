@@ -17,7 +17,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 class OnboardService(implicit actorSystem: ActorSystem, ec: ExecutionContext) {
-  val thisCarId = UUID.fromString("00000000-0000-0000-0000-100000000001")
 
   def initState(id: UUID): Future[Car] = {
     val request = HttpRequest(
@@ -35,7 +34,7 @@ class OnboardService(implicit actorSystem: ActorSystem, ec: ExecutionContext) {
 
   def processEvents(events: Source[ServerSentEvent, NotUsed], carState: AtomicReference[Car]) =
     events
-      .filter(_.data.contains(thisCarId.toString))
+      .filter(_.data.contains(carState.get().id.toString))
       .map(msg => msg.data.split(" ").toList match {
 
         case List(_, userId) if msg.eventType.contains("occupy") =>
