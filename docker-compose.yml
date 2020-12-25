@@ -12,3 +12,25 @@ services:
       - "5432:5432"
     volumes:
       - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - network
+
+  app:
+    image: fedosique/carsharing:0.1
+    container_name: "app"
+    ports:
+      - "8080:8080"
+    networks:
+      - network
+
+#  onboard-app:
+#    build:
+#      context: .
+#      dockerfile: OnboardApp.Dockerfile
+#    container_name: "some_car"
+#    networks:
+#      - network
+
+networks:
+  network:
+    driver: bridge

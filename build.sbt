@@ -1,3 +1,5 @@
+enablePlugins(JavaAppPackaging, DockerPlugin, AshScriptPlugin)
+
 name := "Carsharing"
 
 version := "0.1"
@@ -46,3 +48,5 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic",
   "io.circe" %% "circe-jackson210"
 ).map(_ % circeVersion)
+
+mainClass in (Compile, run) := Some("com.fedosique.carsharing.CarsharingHttpApp")

@@ -20,13 +20,13 @@
 ![picture](./images/scheme-dark.png)
 
 ### Запуск
-Запустите CarsharingHttpApp: `sbt run`
+Поднимите БД и запустите CarsharingHttpApp с помощью `docker-compose up -d`.
 
 Затем, для каждой машины:
 1. Откройте отдельное окно терминала;
-2. Запустите sbt: `sbt`
+2. Запустите sbt: `sbt`;
 3. Запустите OnboardApp, передав в качестве аргумента командной строки id машины:
-   `runMain com.fedosique.carsharing.OnboardApp.OnboardApp 00000000-0000-0000-0000-100000000001`
+   `runMain com.fedosique.carsharing.OnboardApp.OnboardApp 00000000-0000-0000-0000-100000000001`.
 
 ### Сущности
 Состояние автомобиля представлено следующим образом:

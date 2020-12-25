@@ -44,7 +44,7 @@ object CarsharingHttpApp extends App {
   private val apiModule = new ApiModule(clientServiceModule, adminServiceModule, carServiceModule)
 
   Http()
-    .newServerAt("localhost", 8080)
+    .newServerAt("0.0.0.0", 8080)
     .bind(apiModule.routes)
     .foreach(s => println(s"server started at $s"))
 }
