@@ -7,16 +7,15 @@ import akka.http.scaladsl.client.RequestBuilding.Get
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
-import com.fedosique.carsharing.models.Car
+import scala.concurrent.ExecutionContext
+import com.typesafe.scalalogging.LazyLogging
 
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicReference
-import scala.concurrent.ExecutionContextExecutor
 
-object OnboardApp {
+object OnboardApp extends LazyLogging {
 
   implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val ec: ExecutionContextExecutor = actorSystem.dispatcher
+  implicit val ec: ExecutionContext = actorSystem.dispatcher
 
   private val service = new OnboardService
 
@@ -26,9 +25,7 @@ object OnboardApp {
 
     import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
 
-    service.initState(thisCarId).flatMap(car => {
-      val carState = new AtomicReference[Car](car)
-      println(carState)
+    service.initState(thisCarId).flatMap(carState => {
       service.updateLoop(carState)
 
       Http()

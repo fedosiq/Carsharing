@@ -1,6 +1,6 @@
 package com.fedosique.carsharing.storage
 
-import com.fedosique.carsharing.models.{Car, Status, Location}
+import com.fedosique.carsharing.model.{Car, Status, Location}
 import slick.dbio.DBIO
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.{ProvenShape, Rep, TableQuery, Tag}

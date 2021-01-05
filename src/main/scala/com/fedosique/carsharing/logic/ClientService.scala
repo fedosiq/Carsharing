@@ -1,6 +1,6 @@
 package com.fedosique.carsharing.logic
 
-import com.fedosique.carsharing.models.{Car, Location}
+import com.fedosique.carsharing.model.{Car, Location}
 
 import java.util.UUID
 
@@ -18,7 +18,7 @@ trait ClientService[F[_]] {
   /**
    * Shows available cars nearby
    *
-   * @param loc user's location
+   * @param loc   user's location
    * @param limit amount of cars to be returned
    * @return available cars sorted by distance from user's location
    * */
@@ -42,9 +42,9 @@ trait ClientService[F[_]] {
    * @param carId  id of a car to be left
    * @param userId occupier id
    * @return left car info
-   * @throws CarNotFoundException  if carId is not in db
-   * @throws UserNotFoundException if userId is not in db
-   * @throws CarOccupiedByOtherUser if user tries to leave other user's car
+   * @throws CarNotFoundException    if carId is not in db
+   * @throws UserNotFoundException   if userId is not in db
+   * @throws CarOccupiedByOtherUser  if user tries to leave other user's car
    * @throws CarNotOccupiedException if user tries to leave car that he didn't occupy
    * */
   def leaveCar(carId: UUID, userId: UUID): F[Car]

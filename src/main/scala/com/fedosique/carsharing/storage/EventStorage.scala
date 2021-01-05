@@ -1,6 +1,6 @@
 package com.fedosique.carsharing.storage
 
-import com.fedosique.carsharing.models.Event
+import com.fedosique.carsharing.model.Event
 
 import java.time.Instant
 import java.util.UUID

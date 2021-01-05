@@ -4,7 +4,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import cats.~>
 import com.fedosique.carsharing.logic.AdminService
-import com.fedosique.carsharing.models.Car
+import com.fedosique.carsharing.model.Car
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 
 import scala.concurrent.Future
@@ -26,7 +26,7 @@ class AdminApi[F[_]](service: AdminService[F])(implicit FK: F ~> Future) {
     }
   }
   private val allCars: Route = (get & path("cars")) {
-    parameter("limit".as[Int]) { (limit) =>
+    parameter("limit".as[Int]) { limit =>
       complete(FK(service.cars(limit)))
     }
   }

@@ -2,7 +2,7 @@ package com.fedosique.carsharing.OnboardApp
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.fedosique.carsharing.models.Car
+import com.fedosique.carsharing.model.Car
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 
 /**
@@ -14,9 +14,9 @@ class OnboardApi(service: OnboardService) {
       complete(service.sendUpdate(carInfo))
     }
   }
-//  private val sendCurrentState: Route = (post & path("api" / "v1" / "update")) {
-//    complete(service.sync)
-//  }
+//    private val sendCurrentState: Route = (post & path("api" / "v1" / "update")) {
+//      complete(service.sync)
+//    }
 
   val route: Route = sendUpdate
 }

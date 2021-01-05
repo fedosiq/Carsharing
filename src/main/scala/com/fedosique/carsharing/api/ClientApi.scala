@@ -4,7 +4,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import cats.~>
 import com.fedosique.carsharing.logic.ClientService
-import com.fedosique.carsharing.models.Location
+import com.fedosique.carsharing.model.Location
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 
 import java.util.UUID

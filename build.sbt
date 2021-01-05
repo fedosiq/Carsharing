@@ -9,14 +9,13 @@ scalaVersion := "2.13.3"
 //scalacOptions ++= Seq(
 //  "-deprecation",
 //  "-encoding", "UTF-8",
-//  "-language:experimental.macros",
 //  "-feature",
 //  "-unchecked",
 //  "-Xfatal-warnings",
 //  "-Xlint",
 //  "-Ywarn-numeric-widen",
 //  "-Ywarn-value-discard",
-//  "-Ywarn-dead-code", // Warn when dead code is identified.
+//  "-Ywarn-dead-code",
 //  "-Ywarn-extra-implicit"
 //)
 
@@ -27,7 +26,6 @@ libraryDependencies ++= Seq(
 
   "com.typesafe.slick" %% "slick" % "3.3.3",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
-  "org.slf4j" % "slf4j-nop" % "1.6.4",
   "org.postgresql" % "postgresql" % "9.4-1206-jdbc42",
 
   "io.monix" %% "monix" % "3.3.0",
@@ -39,8 +37,11 @@ libraryDependencies ++= Seq(
   "de.heikoseeberger" %% "akka-http-circe" % "1.35.2",
 
   "com.beachape" %% "enumeratum" % "1.6.1",
-  "com.beachape" %% "enumeratum-circe" % "1.6.1"
+  "com.beachape" %% "enumeratum-circe" % "1.6.1",
 
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+  "org.slf4j" % "slf4j-api" % "1.7.25",
+  "ch.qos.logback" % "logback-classic" % "1.2.3"
 )
 
 libraryDependencies ++= Seq(
@@ -49,4 +50,4 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-jackson210"
 ).map(_ % circeVersion)
 
-mainClass in (Compile, run) := Some("com.fedosique.carsharing.CarsharingHttpApp")
+mainClass in(Compile, run) := Some("com.fedosique.carsharing.CarsharingHttpApp")

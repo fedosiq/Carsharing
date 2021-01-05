@@ -1,4 +1,4 @@
-package com.fedosique.carsharing.models
+package com.fedosique.carsharing.model
 
 import java.time.Instant
 import java.util.UUID

@@ -1,4 +1,4 @@
-package com.fedosique.carsharing.models
+package com.fedosique.carsharing.model
 
 import io.circe._
 import io.circe.generic.semiauto._

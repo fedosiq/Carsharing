@@ -5,17 +5,19 @@ import akka.http.scaladsl.Http
 import akka.stream.Materializer
 import cats.implicits.catsStdInstancesForFuture
 import cats.~>
+import cats.arrow.FunctionK
 import com.fedosique.carsharing.api.ApiModule
 import com.fedosique.carsharing.logic._
 import com.fedosique.carsharing.storage._
 import com.rms.miu.slickcats.DBIOInstances._
+import com.typesafe.scalalogging.LazyLogging
 import slick.dbio.DBIO
 import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.Future
 
 
-object CarsharingHttpApp extends App {
+object CarsharingHttpApp extends App with LazyLogging {
 
   implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val materializer = Materializer(actorSystem)
@@ -25,9 +27,7 @@ object CarsharingHttpApp extends App {
   implicit private lazy val evalDb: DBIO ~> Future = new (DBIO ~> Future) {
     override def apply[T](dbio: DBIO[T]): Future[T] = db.run(dbio)
   }
-  implicit private lazy val FK: Future ~> Future = new (Future ~> Future) {
-    override def apply[T](f: Future[T]): Future[T] = f
-  }
+  implicit private lazy val FK: Future ~> Future = FunctionK.id[Future]
 
   private val carStorage = new SlickCarStorage
   private val userStorage = new SlickUserStorage
@@ -46,5 +46,5 @@ object CarsharingHttpApp extends App {
   Http()
     .newServerAt("0.0.0.0", 8080)
     .bind(apiModule.routes)
-    .foreach(s => println(s"server started at $s"))
+    .foreach(s => logger.info(s"server started at $s"))
 }

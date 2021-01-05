@@ -13,6 +13,5 @@ class CarServiceImpl(implicit materializer: Materializer) {
       .toMat(BroadcastHub.sink)(Keep.both)
       .run()
 
-  val eventSource = source
-    .keepAlive(2.second, () => ServerSentEvent("ping", "eventName", "id"))
+  val eventSource = source.keepAlive(2.second, () => ServerSentEvent("ping", "eventName", "id"))
 }

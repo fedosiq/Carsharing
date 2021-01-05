@@ -2,7 +2,7 @@ package com.fedosique.carsharing.logic
 
 import cats._
 import com.fedosique.carsharing.storage.{CarStorage, UserStorage}
-import com.fedosique.carsharing.models.{Car, User}
+import com.fedosique.carsharing.model.{Car, User}
 import cats.syntax.functor._
 
 import java.util.UUID

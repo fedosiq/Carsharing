@@ -1,6 +1,6 @@
 package com.fedosique.carsharing
 
-import com.fedosique.carsharing.models.Location
+import com.fedosique.carsharing.model.Location
 
 import scala.math._
 

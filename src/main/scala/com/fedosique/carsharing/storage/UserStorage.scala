@@ -1,6 +1,6 @@
 package com.fedosique.carsharing.storage
 
-import com.fedosique.carsharing.models.User
+import com.fedosique.carsharing.model.User
 
 import java.util.UUID
 

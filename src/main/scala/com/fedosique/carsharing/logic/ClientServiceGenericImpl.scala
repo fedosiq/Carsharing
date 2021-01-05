@@ -10,22 +10,20 @@ import cats.{Monad, ~>}
 import com.fedosique.carsharing._
 import com.fedosique.carsharing.api.ServerSentEventCodec.sseEncoder
 import com.fedosique.carsharing.logic.ClientServiceGenericImpl.{calcDebt, leaveRequest, occupyRequest}
-import com.fedosique.carsharing.models.{Car, Event, Location}
+import com.fedosique.carsharing.model.{Car, Event, Location}
 import com.fedosique.carsharing.storage.{CarStorage, EventStorage, UserStorage}
 import io.circe.syntax.EncoderOps
 
 import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-import scala.concurrent.ExecutionContext
 
 
 class ClientServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: CarStorage[DbEffect],
                                                                   userStorage: UserStorage[DbEffect],
                                                                   eventStorage: EventStorage[DbEffect])
                                                                  (implicit evalDb: DbEffect ~> F,
-                                                                  actorSystem: ActorSystem,
-                                                                  ec: ExecutionContext) extends ClientService[F] {
+                                                                  actorSystem: ActorSystem) extends ClientService[F] {
 
   override def getCar(id: UUID): F[Option[Car]] = evalDb(carStorage.get(id).map(_.filterNot(_.status.isOccupied)))
 
