@@ -11,6 +11,7 @@ import com.typesafe.scalalogging.StrictLogging
 import io.circe.syntax.EncoderOps
 import io.circe.{ParsingFailure, parser}
 
+import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 import scala.concurrent.duration.DurationInt
@@ -22,7 +23,7 @@ class OnboardService(implicit actorSystem: ActorSystem, ec: ExecutionContext) ex
   def initState(id: UUID): Future[AtomicReference[Car]] = {
     val request = HttpRequest(
       method = HttpMethods.GET,
-      uri = s"http://localhost:8080/api/v1/admin/cars/$id"  // TODO: cars should not send requests to admin service
+      uri = s"http://localhost:8080/api/v1/admin/cars/$id" // TODO: cars should not send requests to admin service
     )
     Http()
       .singleRequest(request)
@@ -36,30 +37,30 @@ class OnboardService(implicit actorSystem: ActorSystem, ec: ExecutionContext) ex
   def processEvents(events: Source[ServerSentEvent, NotUsed], carState: AtomicReference[Car]) =
     events
       .filter(_.data.contains(carState.get().id.toString))
-      .map(msg => msg.data.split(" ").toList match {
-
-        case List(_, userId) if msg.eventType.contains("occupy") =>
+      .runForeach {
+        case ServerSentEvent(s"$_ $userId", Some("occupy"), _, _) =>
           val currentState = carState.get()
-          carState.set(currentState.copy(status = currentState.status.copy(isOccupied = true, occupiedBy = Some(UUID.fromString(userId)))))
-          logger.warn(s"Car occupied, current state: ${carState.get().asJson.toString}")
+          carState.set(currentState.copy(status = currentState.status.copy(occupiedBy = Some(UUID.fromString(userId)), lastUpdate = Instant.now())))
+          logger.warn(s"Car occupied, current state: ${carState.get().asJson}")
 
-        case List(_, _) if msg.eventType.contains("leave") =>
+        case ServerSentEvent(_, Some("leave"), _, _) =>
           val currentState = carState.get()
-          carState.set(currentState.copy(status = currentState.status.copy(isOccupied = false, occupiedBy = None)))
-          logger.warn(s"Car left, current state: ${carState.get().asJson.toString}")
+          carState.set(currentState.copy(status = currentState.status.copy(occupiedBy = None, lastUpdate = Instant.now())))
+          logger.warn(s"Car left, current state: ${carState.get().asJson}")
 
         case _ => logger.error("Bad request: No event type provided")
-      })
-      .runForeach(println)
+      }
 
   def updateLoop(carState: AtomicReference[Car]): Future[Car] = {
     Thread.sleep(10000)
     //change car state
+    val currentState = carState.get()
+    carState.set(currentState.copy(status = currentState.status.copy(lastUpdate = Instant.now())))
     sendUpdate(carState.get()).flatMap(_ => updateLoop(carState))
   }
 
   def sendUpdate(car: Car): Future[Car] = {
-    logger.info(s"Sent car state: ${car.toString}")
+    logger.info(s"Sent car state: $car")
     val request = HttpRequest(
       method = HttpMethods.POST,
       uri = "http://localhost:8080/api/v1/admin/cars/update",

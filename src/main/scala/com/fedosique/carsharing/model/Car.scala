@@ -3,6 +3,7 @@ package com.fedosique.carsharing.model
 import io.circe._
 import io.circe.generic.semiauto._
 
+import java.time.Instant
 import java.util.UUID
 
 
@@ -12,10 +13,11 @@ final case class Car(id: UUID,
                      plateNumber: String,
                      location: Location,
                      status: Status,
-                     price: Double)
+                     price: Double) {
+  def isOccupied: Boolean = status.occupiedBy.isDefined
+}
 
-// TODO: убрать isOccupied
-final case class Status(fuel: Double, isOccupied: Boolean, occupiedBy: Option[UUID])
+final case class Status(fuel: Double, occupiedBy: Option[UUID], lastUpdate: Instant)
 
 object Car {
   implicit val jsonDecoder: Decoder[Car] = deriveDecoder

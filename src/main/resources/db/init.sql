@@ -19,8 +19,8 @@ CREATE TABLE cars
     lat          NUMERIC          NOT NULL,
     lon          NUMERIC          NOT NULL,
     fuel         NUMERIC          NOT NULL,
-    is_occupied  Boolean          NOT NULL,
     occupied_by  uuid,
+    last_update  TIMESTAMP        NOT NULL DEFAULT now(),
     price        NUMERIC          NOT NULL
 );
 
@@ -55,8 +55,8 @@ VALUES ('00000000-0000-0000-0000-100000000001',
         50.348923484978173,
         35.348923484978173,
         0.8,
-        false,
         null,
+        now(),
         10.0),
        ('00000000-0000-0000-0000-100000000002',
         'mazda 3',
@@ -65,6 +65,6 @@ VALUES ('00000000-0000-0000-0000-100000000001',
         50.2355278782,
         40.8493535135,
         0.85,
-        false,
         null,
+        now(),
         5.0);

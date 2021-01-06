@@ -1,10 +1,11 @@
 package com.fedosique.carsharing.storage
 
-import com.fedosique.carsharing.model.{Car, Status, Location}
+import com.fedosique.carsharing.model.{Car, Location, Status}
 import slick.dbio.DBIO
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.{ProvenShape, Rep, TableQuery, Tag}
 
+import java.time.Instant
 import scala.concurrent.ExecutionContext
 import java.util.UUID
 
@@ -26,15 +27,15 @@ class SlickCarStorage(implicit ec: ExecutionContext) extends CarStorage[DBIO] {
 
     def fuel: Rep[Double] = column("fuel")
 
-    def isOccupied: Rep[Boolean] = column("is_occupied")
-
     def occupiedBy: Rep[UUID] = column("occupied_by")
+
+    def lastUpdate: Rep[Instant] = column("last_update")
 
     def price: Rep[Double] = column("price")
 
 
     override def * : ProvenShape[Car] =
-      (id, name, color, plateNumber, (lat, lon), (fuel, isOccupied, occupiedBy.?), price) <>
+      (id, name, color, plateNumber, (lat, lon), (fuel, occupiedBy.?, lastUpdate), price) <>
         ( {
           case (id, name, color, plateNumber, location, status, price) =>
             Car(id, name, color, plateNumber, (Location.apply _).tupled(location), (Status.apply _).tupled(status), price)

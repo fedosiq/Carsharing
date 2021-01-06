@@ -7,15 +7,15 @@ import akka.http.scaladsl.client.RequestBuilding.Get
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
-import scala.concurrent.ExecutionContext
 import com.typesafe.scalalogging.LazyLogging
 
 import java.util.UUID
+import scala.concurrent.ExecutionContextExecutor
 
 object OnboardApp extends LazyLogging {
 
   implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val ec: ExecutionContext = actorSystem.dispatcher
+  implicit val ec: ExecutionContextExecutor = actorSystem.dispatcher
 
   private val service = new OnboardService
 

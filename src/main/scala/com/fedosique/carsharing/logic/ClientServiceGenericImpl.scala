@@ -25,12 +25,12 @@ class ClientServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: Ca
                                                                  (implicit evalDb: DbEffect ~> F,
                                                                   actorSystem: ActorSystem) extends ClientService[F] {
 
-  override def getCar(id: UUID): F[Option[Car]] = evalDb(carStorage.get(id).map(_.filterNot(_.status.isOccupied)))
+  override def getCar(id: UUID): F[Option[Car]] = evalDb(carStorage.get(id).map(_.filterNot(_.isOccupied)))
 
   override def availableCars(loc: Location, limit: Int = 20): F[Seq[Car]] =
     evalDb(carStorage.listAll().map(cars =>
       cars
-        .filterNot(_.status.isOccupied)
+        .filterNot(_.isOccupied)
         .sortBy(car => DistanceCalculator.calculateDistanceInKM(loc, car.location))
         .take(limit)
     ))
@@ -41,7 +41,7 @@ class ClientServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: Ca
 
         Http().singleRequest(occupyRequest(carId, userId)) // TODO: add retries or recover
         for {
-          car <- carStorage.update(carId, car.copy(status = car.status.copy(isOccupied = true, occupiedBy = Some(userId))))
+          car <- carStorage.update(carId, car.copy(status = car.status.copy(occupiedBy = Some(userId))))
           _ <- userStorage.update(userId, user.copy(isRenting = true))
           _ <- eventStorage.put(Event(UUID.randomUUID(), "occupy", carId, userId, car.location, Instant.now()))
         } yield car
@@ -60,7 +60,7 @@ class ClientServiceGenericImpl[F[_] : Monad, DbEffect[_] : Monad](carStorage: Ca
         val leaveTime = Instant.now()
         eventStorage.getLastOccupationTime(userId).flatMap {
           case Some(occupationTime) => for {
-            car <- carStorage.update(carId, car.copy(status = car.status.copy(isOccupied = false, occupiedBy = None)))
+            car <- carStorage.update(carId, car.copy(status = car.status.copy(occupiedBy = None)))
             _ <- userStorage.update(userId, user.copy(isRenting = false, debt = user.debt + calcDebt(occupationTime, leaveTime, car.price)))
             _ <- eventStorage.put(Event(UUID.randomUUID(), "leave", carId, userId, car.location, leaveTime))
           } yield car
